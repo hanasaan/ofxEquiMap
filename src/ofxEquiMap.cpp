@@ -18,9 +18,11 @@ namespace ofxEquiMap {
        }
        );
     
-    void Renderer::setup(int size, Scene* s)
+    void Renderer::setup(int size, Scene* s, int internalformat)
     {
-        cm.initEmptyTextures(size);
+        int type = ofGetGlTypeFromInternal(internalformat);
+        int format = ofGetGLFormatFromInternal(internalformat);
+        cm.initEmptyTextures(size, format, type);
         warpShader.setupShaderFromSource(GL_FRAGMENT_SHADER, warp_frag_shader_str);
         warpShader.linkProgram();
         registerScene(s);
@@ -47,13 +49,13 @@ namespace ofxEquiMap {
     
     void CustomFboRenderer::setup(int size, Scene* s, int internalformat, int numSamples)
     {
-        Renderer::setup(size, s);
+        Renderer::setup(size, s, internalformat);
         fbo.allocate(cm.getWidth(), cm.getHeight(), internalformat, numSamples);
     }
     
     void CustomFboRenderer::setup(int size, Scene* s, ofFbo::Settings fbo_settings)
     {
-        Renderer::setup(size, s);
+        Renderer::setup(size, s, fbo_settings.internalformat);
         fbo.allocate(fbo_settings);
     }
 

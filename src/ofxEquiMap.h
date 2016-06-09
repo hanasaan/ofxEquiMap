@@ -19,7 +19,7 @@ namespace ofxEquiMap
         ofxCubeMap cm;
         ofShader warpShader;
     public:
-        void setup(int size, Scene* s);
+        void setup(int size, Scene* s, int internalformat = GL_RGB);
         virtual void render();
         void draw(float x, float y, float w, float h);
         
@@ -39,7 +39,7 @@ namespace ofxEquiMap
     protected:
         ofFbo fbo;
     public:
-        void setup(int size, Scene* s, int internalformat = GL_RGBA, int numSamples = 0);
+        void setup(int size, Scene* s, int internalformat = GL_RGB, int numSamples = 0);
         void setup(int size, Scene* s, ofFbo::Settings fbo_settings);
         void render() override;
     };
