@@ -71,7 +71,12 @@ namespace ofxEquiMap {
             glLoadIdentity();
             glLoadMatrixf( cm.getProjectionMatrix().getPtr() );
             
-            ofLoadViewMatrix(cm.getLookAtMatrixForFace( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i));
+            glMatrixMode( GL_MODELVIEW );
+            glLoadIdentity();
+            glLoadMatrixf( cm.getLookAtMatrixForFace( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i).getPtr() );
+            
+            // work around for ofLight issue caused by ofxCubeMap
+            ofLoadViewMatrix(ofGetCurrentMatrix(OF_MATRIX_MODELVIEW));
             
             scene->drawEquiScene();
             
