@@ -42,5 +42,8 @@ namespace ofxEquiMap
         void setup(int size, Scene* s, int internalformat = GL_RGB, int numSamples = 0);
         void setup(int size, Scene* s, ofFbo::Settings fbo_settings);
         void render() override;
+        
+        ofFbo& getFbo() { return fbo; }
+        const ofFbo& getFbo() const { return fbo; }
     };
 };
