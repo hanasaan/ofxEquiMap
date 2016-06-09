@@ -3,6 +3,7 @@
 
 class ofApp : public ofBaseApp, public ofxEquiMap::Scene{
     ofxEquiMap::Renderer em;
+    ofxEquiMap::CustomFboRenderer em2;
     
     ofVboMesh m;
 public:
@@ -11,6 +12,7 @@ public:
         ofSetVerticalSync(true);
         ofSetFrameRate(60);
         em.setup(1024, this);
+        em2.setup(1024, this, GL_RGB, 4);
         ofSpherePrimitive p(1000, 24);
         m = p.getMesh();
     }
@@ -26,12 +28,19 @@ public:
     
     void update() {
         em.render();
+        em2.render();
     }
     
     void draw()
     {
         ofClear(0);
-        em.draw(0, 0, ofGetWidth(), ofGetHeight());
+        if (ofGetKeyPressed(' ')) {
+            em.draw(0, 0, ofGetWidth(), ofGetHeight());
+            ofDrawBitmapStringHighlight("Renderer", 10, 40);
+        } else {
+            em2.draw(0, 0, ofGetWidth(), ofGetHeight());
+            ofDrawBitmapStringHighlight("CustomFboRenderer", 10, 40);
+        }
         
         ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate()), 10, 20);
     }

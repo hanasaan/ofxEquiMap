@@ -18,7 +18,7 @@ namespace ofxEquiMap {
        }
        );
     
-    void Renderer::setup(float size, Scene* s)
+    void Renderer::setup(int size, Scene* s)
     {
         cm.initEmptyTextures(size);
         warpShader.setupShaderFromSource(GL_FRAGMENT_SHADER, warp_frag_shader_str);
@@ -30,8 +30,7 @@ namespace ofxEquiMap {
         if (!scene) {
             return;
         }
-        for( int i = 0; i < 6; i++ )
-        {
+        for (int i = 0; i < 6; i++) {
             cm.beginDrawingInto3D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i );
             ofClear(0);
             scene->drawEquiScene();
@@ -45,5 +44,42 @@ namespace ofxEquiMap {
         cm.drawFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, x, y, w, h);
         warpShader.end();
     }
+    
+    void CustomFboRenderer::setup(int size, Scene* s, int internalformat, int numSamples)
+    {
+        Renderer::setup(size, s);
+        fbo.allocate(cm.getWidth(), cm.getHeight(), internalformat, numSamples);
+    }
+    
+    void CustomFboRenderer::setup(int size, Scene* s, ofFbo::Settings fbo_settings)
+    {
+        Renderer::setup(size, s);
+        fbo.allocate(fbo_settings);
+    }
 
+    void CustomFboRenderer::render() {
+        for (int i = 0; i < 6; ++i) {
+            fbo.begin();
+            ofClear(0);
+            ofPushView();
+            
+            glMatrixMode( GL_PROJECTION );
+            glLoadIdentity();
+            
+            glLoadMatrixf( cm.getProjectionMatrix().getPtr() );
+            
+            glMatrixMode( GL_MODELVIEW );
+            glLoadMatrixf( cm.getLookAtMatrixForFace( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i).getPtr() );
+            
+            scene->drawEquiScene();
+            
+            ofPopView();
+            fbo.end();
+            
+            cm.beginDrawingInto2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+            ofClear(0);
+            fbo.draw(0, 0);
+            cm.endDrawingInto2D();
+        }
+    }
 }
